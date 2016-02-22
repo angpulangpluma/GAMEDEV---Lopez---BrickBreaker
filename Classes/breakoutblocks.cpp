@@ -5,10 +5,11 @@ USING_NS_CC;
 Scene* Breakout::createScene()
 {
     // 'scene' is an autorelease object
-    auto scene = Scene::create();
+    auto scene = Scene::createWithPhysics();
     
     // 'layer' is an autorelease object
     auto layer = Breakout::create();
+	layer->setPhysicsWorld(scene->getPhysicsWorld());
 
     // add layer as a child to scene
     scene->addChild(layer);
@@ -40,6 +41,9 @@ bool Breakout::init()
 		Sprite* w = Sprite::create("wall.png");
 		w->setAnchorPoint(Vec2(0, 0));
 		w->setPosition(posx + 40, one->getPositionY());
+		auto pb = PhysicsBody::createBox(Size(w->getBoundingBox().size.width, w->getBoundingBox().size.height), PhysicsMaterial(0.1f, 1.0f, 0.0f));
+		pb->setDynamic(false);
+		w->setPhysicsBody(pb);
 		this->addChild(w, 0);
 		posx = w->getPositionX();
 		walls.pushBack(w);
@@ -51,6 +55,17 @@ bool Breakout::init()
 	platform->setPosition(this->getBoundingBox().getMidX()-30, this->getBoundingBox().getMidY() - 150);
 	ball->setPosition(this->getBoundingBox().getMidX(), platform->getPositionY() + 25);
 	platform->setAnchorPoint(Vec2(0, 0));
+
+	auto physicsBody = PhysicsBody::createBox(Size(platform->getBoundingBox().size.width, platform->getBoundingBox().size.height), PhysicsMaterial(0.1f, 1.0f, 0.0f));
+	physicsBody->setDynamic(true);
+	physicsBody->setContactTestBitmask(true);
+	platform->setPhysicsBody(physicsBody);
+
+	auto ballpb = PhysicsBody::createBox(Size(ball->getBoundingBox().size.width, ball->getBoundingBox().size.height), PhysicsMaterial(0.1f, 1.0f, 0.0f));
+	ballpb->setDynamic(false);
+	ballpb->setContactTestBitmask(true);
+	ball->setPhysicsBody(ballpb);
+
 	this->addChild(platform, 0);
 	this->addChild(ball, 0);
 
@@ -94,6 +109,7 @@ void Breakout::update(float delta){
 	if (isKeyPressed(EventKeyboard::KeyCode::KEY_SPACE) && !start){
 		start = true;
 		log("start!");
+		//make the ball move here
 	}
 	if (isKeyPressed(EventKeyboard::KeyCode::KEY_LEFT_ARROW) ||
 		isKeyPressed(EventKeyboard::KeyCode::KEY_A)){
@@ -109,6 +125,10 @@ void Breakout::update(float delta){
 			ball->setPosition(ploc.x+35, bloc.y);
 		platform->setPosition(ploc.x+5, ploc.y);
 	}
+
+	if (bloc.y==0){
+		//detect if the ball is at the bottom of the screen
+	}
 }
 
 bool Breakout::isKeyPressed(EventKeyboard::KeyCode code){
@@ -116,6 +136,17 @@ bool Breakout::isKeyPressed(EventKeyboard::KeyCode code){
 		return true;
 	}
 	return false;
+}
+
+bool Breakout::onContactBegin(cocos2d::PhysicsContact& contact){
+	auto spriteA = (Sprite*)contact.getShapeA()->getBody()->getNode();
+	auto spriteB = (Sprite*)contact.getShapeB()->getBody()->getNode();
+
+	//how to detect collision between one of the walls and the ball?
+	if (spriteA->getName().compare("A") == 0 && spriteB->getName().compare("B") == 0) {
+	}
+
+	return true;
 }
 
 std::map<cocos2d::EventKeyboard::KeyCode,

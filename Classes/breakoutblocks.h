@@ -14,9 +14,17 @@ public:
     static cocos2d::Scene* createScene();
 	bool start;
 
+	void setPhysicsWorld(cocos2d::PhysicsWorld* world){
+		mWorld = world;
+		mWorld->setGravity(cocos2d::Vect(0, 0));
+	}
+
     virtual bool init();
 	virtual void update(float) override;
+	void restartGame();
 	bool isKeyPressed(cocos2d::EventKeyboard::KeyCode);
+	bool onContactBegin(cocos2d::PhysicsContact& contact);
+	cocos2d::PhysicsWorld* mWorld;
     
     // implement the "static create()" method manually
     CREATE_FUNC(Breakout);
