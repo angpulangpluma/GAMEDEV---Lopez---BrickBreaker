@@ -8,7 +8,7 @@ Scene* Breakout::createScene()
     auto scene = Scene::createWithPhysics();
     
     // 'layer' is an autorelease object
-    auto layer = Breakout::create();
+	auto *layer = Breakout::create();
 	layer->setPhysicsWorld(scene->getPhysicsWorld());
 
     // add layer as a child to scene
@@ -19,14 +19,29 @@ Scene* Breakout::createScene()
 }
 
 // on "init" you need to initialize your instance
-bool Breakout::init()
+void Breakout::onEnter()
 {
-    //////////////////////////////
-    // 1. super init first
-    if ( !Layer::init() )
-    {
-        return false;
-    }
+	Layer::onEnter();
+
+	auto scene = getScene();
+	auto world = scene->getPhysicsWorld();
+	world->setGravity(Vec2::ZERO);
+
+	Size visibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+
+	auto contactListener = EventListenerPhysicsContact::create();
+	contactListener->onContactBegin = CC_CALLBACK_1(Breakout::onContactBegin, this);
+	contactListener->onContactSeparate = CC_CALLBACK_1(Breakout::onContactSeperate, this);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
+
+	auto edgeBody = PhysicsBody::createEdgeBox(visibleSize, PHYSICSBODY_MATERIAL_DEFAULT, 3);
+
+	auto edgeNode = Node::create();
+	edgeNode->setPosition(Point(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
+	edgeNode->setPhysicsBody(edgeBody);
+
+	this->addChild(edgeNode);
     
 	walls = Vector<Sprite*>{};
 	start = false;
@@ -56,7 +71,8 @@ bool Breakout::init()
 	ball = Sprite::create("ball.png");
 	ball->setAnchorPoint(Vec2(0, 0));
 	platform->setPosition(this->getBoundingBox().getMidX()-30, this->getBoundingBox().getMidY() - 150);
-	ball->setPosition(this->getBoundingBox().getMidX(), platform->getPositionY() + 25);
+	ball->setPosition(this->getBoundingBox().getMidX(), this->getBoundingBox().getMidY() - 125);
+	this->addChild(ball);
 	platform->setAnchorPoint(Vec2(0, 0));
 
 	auto physicsBody = PhysicsBody::createBox(Size(platform->getBoundingBox().size.width, platform->getBoundingBox().size.height), PhysicsMaterial(0.1f, 1.0f, 0.0f));
@@ -64,14 +80,12 @@ bool Breakout::init()
 	physicsBody->setContactTestBitmask(true);
 	platform->setPhysicsBody(physicsBody);
 
-	auto ballpb = PhysicsBody::createBox(Size(ball->getBoundingBox().size.width, ball->getBoundingBox().size.height), PhysicsMaterial(1.0f, 1.0f, 0.0f));
-	ballpb->setGravityEnable(false);
-	ballpb->setContactTestBitmask(true);
+	auto ballpb = PhysicsBody::createBox(Size(ball->getBoundingBox().size.width, ball->getBoundingBox().size.height), PhysicsMaterial(1.0f, 1.0f, 1.0f));
+	//ballpb->setContactTestBitmask(true);
 	ballpb->setVelocity(Vec2(0, 0));
 	ball->setPhysicsBody(ballpb);
 
 	this->addChild(platform, 0);
-	this->addChild(ball, 0);
 
 	auto eventListener = EventListenerKeyboard::create();
 	eventListener->onKeyPressed = [=](EventKeyboard::KeyCode keyCode,
@@ -85,19 +99,17 @@ bool Breakout::init()
 		switch (keyCode){
 		case EventKeyboard::KeyCode::KEY_LEFT_ARROW:
 		case EventKeyboard::KeyCode::KEY_A:{ //left
-			if (!(loc.x > this->getBoundingBox().getMaxX()) ||
-				!(loc.x < this->getBoundingBox().getMinX())){
+			
 				platform->setPosition(loc.x - 5, loc.y);
 				log("left");
-			}
+			
 		};  break;
 		case EventKeyboard::KeyCode::KEY_RIGHT_ARROW:
 		case EventKeyboard::KeyCode::KEY_D:{ //right
-			if (!(loc.x > this->getBoundingBox().getMaxX()) ||
-				!(loc.x < this->getBoundingBox().getMinX())){
+			
 				platform->setPosition(loc.x + 5, loc.y);
 				log("right");
-			}
+			
 		}; break;
 		}
 	};
@@ -109,7 +121,7 @@ bool Breakout::init()
 	this->_eventDispatcher->addEventListenerWithSceneGraphPriority(eventListener, platform);
 
 	this->scheduleUpdate();
-    return true;
+    return;
 }
 
 void Breakout::update(float delta){
@@ -129,12 +141,20 @@ void Breakout::update(float delta){
 		log("left!");
 		if (!start)
 			ball->setPosition(ploc.x+30, bloc.y);
+		
+			platform->setPosition(ploc.x - 5, ploc.y);
+			log("left");
+		
 	}
 	else if (isKeyPressed(EventKeyboard::KeyCode::KEY_RIGHT_ARROW) ||
 		isKeyPressed(EventKeyboard::KeyCode::KEY_D)){
 		log("right!");
 		if (!start)
 			ball->setPosition(ploc.x+35, bloc.y);
+		
+			platform->setPosition(ploc.x + 5, ploc.y);
+			log("left");
+		
 	}
 
 	if (bloc.y==0){
@@ -150,14 +170,32 @@ bool Breakout::isKeyPressed(EventKeyboard::KeyCode code){
 }
 
 bool Breakout::onContactBegin(cocos2d::PhysicsContact& contact){
-	auto spriteA = (Sprite*)contact.getShapeA()->getBody()->getNode();
-	auto spriteB = (Sprite*)contact.getShapeB()->getBody()->getNode();
+	auto a = contact.getShapeA()->getBody();
+	auto b = contact.getShapeB()->getBody();
 
-	//how to detect collision between one of the walls and the ball?
-	if (spriteA->getName().compare("A") == 0 && spriteB->getName().compare("B") == 0) {
-	}
+	float* v = new float[2];
+	v[0] = a->getVelocity().length();
+	v[1] = b->getVelocity().length();
+
+	contact.setData(v);
 
 	return true;
+}
+
+void Breakout::onContactSeperate(PhysicsContact& contact){
+	auto a = contact.getShapeA()->getBody();
+	auto b = contact.getShapeB()->getBody();
+
+	float* v = (float*)contact.getData();
+	auto va = a->getVelocity();
+	auto vb = b->getVelocity();
+	va.normalize();
+	vb.normalize();
+	a->setVelocity(va*v[0]);
+	b->setVelocity(vb*v[1]);
+
+	delete v;
+
 }
 
 std::map<cocos2d::EventKeyboard::KeyCode,
