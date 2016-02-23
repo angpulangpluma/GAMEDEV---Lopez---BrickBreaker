@@ -34,6 +34,9 @@ bool Breakout::init()
 	Sprite* one = Sprite::create("wall.png");
 	one->setAnchorPoint(Vec2(0, 0));
 	one->setPosition(0, 250);
+	auto pb = PhysicsBody::createBox(Size(one->getBoundingBox().size.width, one->getBoundingBox().size.height), PhysicsMaterial(0.1f, 1.0f, 1.0f));
+	pb->setDynamic(false);
+	one->setPhysicsBody(pb);
 	this->addChild(one, 0);
 	walls.pushBack(one);
 	auto posx = one->getPositionX();
@@ -41,7 +44,7 @@ bool Breakout::init()
 		Sprite* w = Sprite::create("wall.png");
 		w->setAnchorPoint(Vec2(0, 0));
 		w->setPosition(posx + 40, one->getPositionY());
-		auto pb = PhysicsBody::createBox(Size(w->getBoundingBox().size.width, w->getBoundingBox().size.height), PhysicsMaterial(0.1f, 1.0f, 0.0f));
+		auto pb = PhysicsBody::createBox(Size(w->getBoundingBox().size.width, w->getBoundingBox().size.height), PhysicsMaterial(0.1f, 1.0f, 1.0f));
 		pb->setDynamic(false);
 		w->setPhysicsBody(pb);
 		this->addChild(w, 0);
@@ -57,13 +60,14 @@ bool Breakout::init()
 	platform->setAnchorPoint(Vec2(0, 0));
 
 	auto physicsBody = PhysicsBody::createBox(Size(platform->getBoundingBox().size.width, platform->getBoundingBox().size.height), PhysicsMaterial(0.1f, 1.0f, 0.0f));
-	physicsBody->setDynamic(true);
+	physicsBody->setDynamic(false);
 	physicsBody->setContactTestBitmask(true);
 	platform->setPhysicsBody(physicsBody);
 
-	auto ballpb = PhysicsBody::createBox(Size(ball->getBoundingBox().size.width, ball->getBoundingBox().size.height), PhysicsMaterial(0.1f, 1.0f, 0.0f));
-	ballpb->setDynamic(false);
+	auto ballpb = PhysicsBody::createBox(Size(ball->getBoundingBox().size.width, ball->getBoundingBox().size.height), PhysicsMaterial(1.0f, 1.0f, 0.0f));
+	ballpb->setGravityEnable(false);
 	ballpb->setContactTestBitmask(true);
+	ballpb->setVelocity(Vec2(0, 0));
 	ball->setPhysicsBody(ballpb);
 
 	this->addChild(platform, 0);
@@ -81,13 +85,19 @@ bool Breakout::init()
 		switch (keyCode){
 		case EventKeyboard::KeyCode::KEY_LEFT_ARROW:
 		case EventKeyboard::KeyCode::KEY_A:{ //left
-			platform->setPosition(loc.x-5, loc.y);
-			log("left");
+			if (!(loc.x > this->getBoundingBox().getMaxX()) ||
+				!(loc.x < this->getBoundingBox().getMinX())){
+				platform->setPosition(loc.x - 5, loc.y);
+				log("left");
+			}
 		};  break;
 		case EventKeyboard::KeyCode::KEY_RIGHT_ARROW:
 		case EventKeyboard::KeyCode::KEY_D:{ //right
-			platform->setPosition(loc.x+5, loc.y);
-			log("right");
+			if (!(loc.x > this->getBoundingBox().getMaxX()) ||
+				!(loc.x < this->getBoundingBox().getMinX())){
+				platform->setPosition(loc.x + 5, loc.y);
+				log("right");
+			}
 		}; break;
 		}
 	};
@@ -106,24 +116,25 @@ void Breakout::update(float delta){
 
 	Vec2 ploc = platform->getPosition();
 	Vec2 bloc = ball->getPosition();
+	auto pbody = ball->getPhysicsBody();
 	if (isKeyPressed(EventKeyboard::KeyCode::KEY_SPACE) && !start){
 		start = true;
 		log("start!");
 		//make the ball move here
+		pbody->setGravityEnable(false);
+		pbody->setVelocity(Vec2(100, 100));
 	}
 	if (isKeyPressed(EventKeyboard::KeyCode::KEY_LEFT_ARROW) ||
 		isKeyPressed(EventKeyboard::KeyCode::KEY_A)){
 		log("left!");
 		if (!start)
 			ball->setPosition(ploc.x+30, bloc.y);
-		platform->setPosition(ploc.x-5, ploc.y);
 	}
 	else if (isKeyPressed(EventKeyboard::KeyCode::KEY_RIGHT_ARROW) ||
 		isKeyPressed(EventKeyboard::KeyCode::KEY_D)){
 		log("right!");
 		if (!start)
 			ball->setPosition(ploc.x+35, bloc.y);
-		platform->setPosition(ploc.x+5, ploc.y);
 	}
 
 	if (bloc.y==0){
