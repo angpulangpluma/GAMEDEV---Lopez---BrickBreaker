@@ -1,5 +1,5 @@
 #include "AppDelegate.h"
-#include "breakoutblocks.h"
+#include "MainMenu.h"
 
 USING_NS_CC;
 
@@ -23,7 +23,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     auto director = Director::getInstance();
     auto glview = director->getOpenGLView();
 	if (!glview){
-		glview = GLViewImpl::create("Breakout");
+		glview = GLViewImpl::create("DeAkumatize");
 		glview->setFrameSize(1080, 480);
 		director->setOpenGLView(glview);
 	}
@@ -31,7 +31,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     register_all_packages();
 
     // create a scene. it's an autorelease object
-    auto scene = Breakout::createScene();
+    auto scene = MainMenu::createScene();
 
     // run
     director->runWithScene(scene);

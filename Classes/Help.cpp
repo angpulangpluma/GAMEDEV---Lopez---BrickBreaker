@@ -25,11 +25,25 @@ bool Help::init()
         return false;
     }
     
-	auto label = Label::createWithSystemFont("Hello World", "Arial", 96);
-	label->setAnchorPoint(cocos2d::Vec2(0.0, 0.0));
-	label->setPosition(50, 350);
-	//label->setPosition(500, 500);
-	this->addChild(label, 1);
+	auto borders = this->getBoundingBox();
+	auto title = Label::createWithSystemFont("DeAkumatize", "Arial", 30);
+
+	title->setPosition(Point(borders.getMidX(), borders.getMidY() + 150));
+
+	this->addChild(title);
+
+	auto menu_play = Label::createWithSystemFont("Play", "Arial", 30);
+	auto menu_help = Label::createWithSystemFont("Help", "Arial", 30);
+	auto menu_exit = Label::createWithSystemFont("Exit", "Arial", 30);
+
+	menu_play->setPosition(Point(title->getPositionX(), title->getPositionY() - 100));
+	menu_help->setPosition(Point(menu_play->getPositionX(), menu_play->getPositionY() - 50));
+	menu_exit->setPosition(Point(menu_help->getPositionX(), menu_help->getPositionY() - 50));
+
+	this->addChild(menu_play);
+	this->addChild(menu_help);
+	this->addChild(menu_exit);
+
     
     return true;
 }
