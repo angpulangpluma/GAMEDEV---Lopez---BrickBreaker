@@ -14,9 +14,10 @@ public:
     static cocos2d::Scene* createScene();
 	bool start;
 
-    virtual void onEnter() override;
+    virtual bool init() override;
 	virtual void update(float) override;
-	void restartGame();
+	//void restartGame();
+	void createObject();
 	bool isKeyPressed(cocos2d::EventKeyboard::KeyCode);
 	bool onContactBegin(cocos2d::PhysicsContact& contact);
 	void onContactSeperate(cocos2d::PhysicsContact& contact);
@@ -26,6 +27,6 @@ public:
 
 private:
 	cocos2d::PhysicsWorld *sceneWorld;
-
+	cocos2d::Sprite* sp1;
 	void setPhysicsWorld(cocos2d::PhysicsWorld *world) { sceneWorld = world; };
 };
