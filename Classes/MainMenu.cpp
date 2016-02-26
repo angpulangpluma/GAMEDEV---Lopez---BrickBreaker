@@ -138,5 +138,5 @@ void MainMenu::exit(){
 
 int selection;
 std::map<cocos2d::EventKeyboard::KeyCode,
-	std::chrono::high_resolution_clock::time_point> keys;
+	std::chrono::high_resolution_clock::time_point> MainMenu::keys;
 Sprite* selector;

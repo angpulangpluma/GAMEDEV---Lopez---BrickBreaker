@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cocos2d.h"
+#include <map>
 
 class MainMenu : public cocos2d::Layer
 {
