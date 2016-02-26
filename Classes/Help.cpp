@@ -42,6 +42,18 @@ bool Help::init()
 		if (keys.find(keyCode) == keys.end()){
 			keys[keyCode] = std::chrono::high_resolution_clock::now();
 		}
+		switch (keyCode){
+		case EventKeyboard::KeyCode::KEY_LEFT_ARROW:{
+			if (sequence >= 1 && sequence <= 4)
+				sequence--;
+			log("current seq no: " + sequence);
+		}; break;
+		case EventKeyboard::KeyCode::KEY_RIGHT_ARROW:{
+			if (sequence >= 1 && sequence <= 4)
+				sequence++;
+			log("current seq no: " + sequence);
+		}; break;
+		}
 
 	};
 
@@ -57,7 +69,7 @@ bool Help::init()
 	auto help_play = Label::createWithSystemFont("Press 'Enter' to start playing!", "Arial", 25);
 
 	help_desc->setPosition(Point(title->getPositionX(), title->getPositionY() - 50));
-	help_pic->setPosition(Point(help_desc->getPositionX(), help_desc->getPositionY() - 200));
+	help_pic->setPosition(Point(help_desc->getPositionX(), help_desc->getPositionY() - 50));
 	help_pgno->setPosition(Point(borders.getMidX()+250, borders.getMinY()+20));
 	help_play->setPosition(Point(borders.getMidX() - 250, borders.getMinY() + 20));
 

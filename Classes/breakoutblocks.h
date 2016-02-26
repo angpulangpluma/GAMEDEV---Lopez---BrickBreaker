@@ -14,6 +14,7 @@ public:
 	cocos2d::Vector<cocos2d::Sprite*> walls;
     static cocos2d::Scene* createScene();
 	bool start;
+	int wallcount;
 
     virtual bool init() override;
 	virtual void update(float) override;

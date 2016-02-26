@@ -3,7 +3,7 @@
 #include "cocos2d.h"
 #include <map>
 
-class MainMenu : public cocos2d::Layer
+class WinScene : public cocos2d::Layer
 {
 public:
     static cocos2d::Scene* createScene();
@@ -23,10 +23,10 @@ public:
 	void exit();
     
     // implement the "static create()" method manually
-    CREATE_FUNC(MainMenu);
+    CREATE_FUNC(WinScene);
 private:
-	int selection;
+	int winselect;
 	static std::map<cocos2d::EventKeyboard::KeyCode,
 		std::chrono::high_resolution_clock::time_point> keys;
-	cocos2d::Sprite* selector;
+	cocos2d::Sprite* winselector;
 };

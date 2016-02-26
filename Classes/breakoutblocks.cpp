@@ -1,4 +1,7 @@
 #include "breakoutblocks.h"
+#include "MainMenu.h"
+#include "Win.h"
+#include "Lose.h"
 
 USING_NS_CC;
 
@@ -58,8 +61,9 @@ bool Breakout::init()
 		one->setPhysicsBody(onepb);
 		one->setTag(39);
 		this->addChild(one);
+		wallcount = 1;
 		auto posx = one->getPositionX();
-		for (int i = 1; i < 1080 / 40; i++){
+		/*for (int i = 1; i < 1080 / 40; i++){
 			Sprite* w = Sprite::create("wall.png");
 			w->setAnchorPoint(Vec2(0, 0));
 			w->setPosition(posx + 40, one->getPositionY());
@@ -73,7 +77,8 @@ bool Breakout::init()
 			w->setTag(39);
 			this->addChild(w);
 			posx = w->getPositionX();
-		}
+			wallcount++;
+		}*/
 
 		ball = Sprite::create("ball.png");
 		auto ballpb = PhysicsBody::createBox(ball->getContentSize(), 
@@ -147,29 +152,6 @@ bool Breakout::init()
     return true;
 }
 
-void Breakout::createObject(){
-	log("new object pls");
-
-	auto sp2 = Sprite::create("ball.png");
-	sp2->setPosition(Vec2(random(3, 1080), random(3, 480)));
-	while (sp2->getPosition() == sp1->getPosition()){
-		sp2->setPosition(Vec2(random(0, 1080), random(0, 480)));
-	}
-	sp2->setTag(11);
-
-	auto sp2bd = PhysicsBody::createBox(sp2->getContentSize(), 
-		PhysicsMaterial(1.0f, 1.0, 1.0f));
-	sp2bd->setCollisionBitmask(1);
-	sp2bd->setContactTestBitmask(true);
-	sp2bd->setGravityEnable(false);
-	sp2bd->setVelocity(Vec2(random(-500, 500), random(-500, 500)));
-
-	sp2->setPhysicsBody(sp2bd);
-
-	this->addChild(sp2);
-	log("created new object!");
-}
-
 void Breakout::update(float delta){
 
 	Vec2 ploc = platform->getPosition();
@@ -180,7 +162,7 @@ void Breakout::update(float delta){
 		log("start!");
 		//make the ball move here
 		pbody->setLinearDamping(0.0f);
-		pbody->setVelocity(Vec2(100, 100));
+		pbody->setVelocity(Vec2(250, 250));
 		//pbody->setAngularVelocity(0);
 	}
 	if (isKeyPressed(EventKeyboard::KeyCode::KEY_LEFT_ARROW) ||
@@ -206,7 +188,12 @@ void Breakout::update(float delta){
 
 	if (bloc.y<platform->getBoundingBox().getMinY()){
 		//detect if the ball is at the bottom of the screen
-		log("nooooo");
+		auto scene = LoseScene::createScene();
+		Director::getInstance()->replaceScene(scene);
+	}
+	else if (wallcount == 0){
+		auto scene = WinScene::createScene();
+		Director::getInstance()->replaceScene(scene);
 	}
 }
 
@@ -226,81 +213,25 @@ bool Breakout::onContactBegin(cocos2d::PhysicsContact& contact){
 		if (a->getTag() == 39 && b->getTag() == 11){
 			log("got in");
 			a->removeFromParentAndCleanup(true);
+			ball->getPhysicsBody()->setVelocity(Vec2(250, 250));
 			//createObject();
 		}
 		else if (b->getTag() == 39 && a->getTag() == 11){
 			log("got in");
 			b->removeFromParentAndCleanup(true);
+			ball->getPhysicsBody()->setVelocity(Vec2(250, 250));
 			//createObject();
 		}
 		else if (a->getTag() == 49 && b->getTag() == 11){
-			float* v = new float[2];
-			v[0] = b->getPhysicsBody()->getVelocity().length();
-			v[1] = b->getPhysicsBody()->getVelocity().length();
-
-			contact.setData(v);
+			ball->getPhysicsBody()->setVelocity(Vec2(250, 250));
 		}
 		else if (b->getTag() == 49 && a->getTag() == 11){
-			float* v = new float[2];
-			v[0] = a->getPhysicsBody()->getVelocity().length();
-			v[1] = a->getPhysicsBody()->getVelocity().length();
-
-			contact.setData(v);
+			ball->getPhysicsBody()->setVelocity(Vec2(250, 250));
 		}
 		else if (a->getTag() == b->getTag() && a->getTag() == 11){
-			float* v = new float[2];
-			v[0] = a->getPhysicsBody()->getVelocity().length();
-			v[1] = b->getPhysicsBody()->getVelocity().length();
-
-			contact.setData(v);
+			ball->getPhysicsBody()->setVelocity(Vec2(250, 250));
 		}
-		/*if (a->getTag() == 39){
-			a->removeFromParentAndCleanup(true);
-			createObject();
-		}
-		else if (b->getTag() == 39){
-			b->removeFromParentAndCleanup(true);
-			createObject();
-		}
-		else if (a->getTag() == 49){
-
-		}
-		else if (b->getTag() == 49){
-
-		}*/
 	}
-
-	/*if (a && b){
-		log("Something happened!");
-		if (a->getTag() == 39 && 1 == a->getCollisionBitmask() && 2 == b->getCollisionBitmask()){
-			log("Collision!");
-			a->setVelocity(Vec2(100, 100));
-			//b->setAngularDamping(0.0f);
-			for (int i = 0; i < walls.size(); i++){
-				if (b->getNode()->getTag() == walls.at(i)->getTag()){
-					walls.at(i)->removeFromParentAndCleanup(true);
-				}
-				else{
-					log("No wall detected");
-				}
-			}
-			//b->getNode()->removeFromParentAndCleanup(true);
-		}
-		else if (b->getTag() == 39 && 1 == b->getCollisionBitmask() && 2 == a->getCollisionBitmask()){
-			log("Collision!");
-			b->setVelocity(Vec2(100, 100));
-			//b->setAngularDamping(0.0f);
-			for (int i = 0; i < walls.size(); i++){
-				if (a->getNode()->getTag() == walls.at(i)->getTag()){
-					walls.at(i)->removeFromParentAndCleanup(true);
-				}
-				else{
-					log("No wall detected");
-				}
-			}
-		}
-	}*/
-
 	return true;
 }
 
