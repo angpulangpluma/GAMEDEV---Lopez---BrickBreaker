@@ -81,8 +81,8 @@ bool Breakout::init()
 
 		platform = Sprite::create("platform.png");
 		platform->setAnchorPoint(Vec2(0, 0));
-		platform->setPosition(this->getBoundingBox().getMidX() - 30, this->getBoundingBox().getMidY() - 150);
-		ball->setPosition(platform->getPositionX() + 30, platform->getPositionY() + 25);
+		platform->setPosition(this->getBoundingBox().getMidX() - 30, this->getBoundingBox().getMinY() + 50);
+		ball->setPosition(platform->getPositionX() + 35, platform->getPositionY() + 25);
 
 		auto physicsBody = PhysicsBody::createBox(platform->getContentSize(),
 			PhysicsMaterial(2.0f, 1.0f, 2.0f));
@@ -157,7 +157,7 @@ void Breakout::createWalls(float startCoordX, float startCoordY){
 		w->setPhysicsBody(pb);
 		w->setTag(39);
 		this->addChild(w);
-		posx = w->getPositionX()+40;
+		posx = w->getPositionX()+45;
 		prev = w;
 		wallcount++;
 	}
@@ -197,7 +197,7 @@ void Breakout::update(float delta){
 		
 	}
 
-	if (bloc.y==edgeBox->getBoundingBox().getMinY()+3){
+	if (bloc.y<platform->getBoundingBox().getMaxY()){
 		//detect if the ball is at the bottom of the screen
 		auto scene = LoseScene::createScene();
 		Director::getInstance()->replaceScene(scene);
@@ -225,22 +225,25 @@ bool Breakout::onContactBegin(cocos2d::PhysicsContact& contact){
 			log("got in");
 			a->removeFromParentAndCleanup(true);
 			ball->getPhysicsBody()->setVelocity(Vec2(250, 250));
+			return true;
 			//createObject();
 		}
 		else if (b->getTag() == 39 && a->getTag() == 11){
 			log("got in");
 			b->removeFromParentAndCleanup(true);
 			ball->getPhysicsBody()->setVelocity(Vec2(250, 250));
+			return true;
 			//createObject();
 		}
 		else if (a->getTag() == 49 && b->getTag() == 11){
 			ball->getPhysicsBody()->setVelocity(Vec2(250, 250));
+			return false;
 		}
 		else if (b->getTag() == 49 && a->getTag() == 11){
 			ball->getPhysicsBody()->setVelocity(Vec2(250, 250));
+			return false;
 		}
 	}
-	return true;
 }
 
 void Breakout::onContactSeperate(PhysicsContact& contact){
