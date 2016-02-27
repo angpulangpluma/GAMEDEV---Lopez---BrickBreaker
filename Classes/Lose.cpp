@@ -27,27 +27,27 @@ bool LoseScene::init()
     }
 
 	auto borders = this->getBoundingBox();
-	auto title = Label::createWithSystemFont("You Lost!", "Arial", 30);
+	auto title = Label::createWithSystemFont("Oh no...", "Arial", 30);
 
 	title->setPosition(Point(borders.getMidX(), borders.getMidY()+150));
 
 	this->addChild(title);
 
-	menu_play = Label::createWithSystemFont("Play", "Arial", 30);
-	menu_help = Label::createWithSystemFont("Help", "Arial", 30);
+	menu_play = Label::createWithSystemFont("Try Again?", "Arial", 30);
+	//menu_help = Label::createWithSystemFont("Help", "Arial", 30);
 	menu_exit = Label::createWithSystemFont("Exit", "Arial", 30);
 
-	menu_play->setPosition(Point(title->getPositionX(), title->getPositionY()-100));
-	menu_help->setPosition(Point(menu_play->getPositionX(), menu_play->getPositionY() - 50));
-	menu_exit->setPosition(Point(menu_help->getPositionX(), menu_help->getPositionY() - 50));
+	menu_play->setPosition(Point(title->getPositionX(), title->getPositionY()-150));
+	//menu_help->setPosition(Point(menu_play->getPositionX(), menu_play->getPositionY() - 50));
+	menu_exit->setPosition(Point(menu_play->getPositionX(), menu_play->getPositionY() - 50));
 
 	this->addChild(menu_play);
-	this->addChild(menu_help);
+	//this->addChild(menu_help);
 	this->addChild(menu_exit);
 
 	//create "loseselector"
 	loseselector = Sprite::create("ball.png");
-	loseselector->setPosition(menu_play->getPositionX()-50, menu_play->getPositionY());
+	loseselector->setPosition(menu_play->getPositionX()-700, menu_play->getPositionY());
 	this->addChild(loseselector);
 
 	loseselect = 1;
@@ -66,12 +66,12 @@ bool LoseScene::init()
 		case EventKeyboard::KeyCode::KEY_UP_ARROW:{
 			log("up");
 			if (loseselect == 1)
-				loseselect = 3;
+				loseselect = 2;
 			else loseselect--;
 		}; break;
 		case EventKeyboard::KeyCode::KEY_DOWN_ARROW:{
 			log("down");
-			if (loseselect == 3)
+			if (loseselect == 2)
 				loseselect = 1;
 			else loseselect++;
 		}; break;
@@ -91,12 +91,9 @@ bool LoseScene::init()
 void LoseScene::update(float delta){
 	switch (loseselect){
 	case 1: {
-		loseselector->setPosition(menu_play->getPositionX() - 50, menu_play->getPositionY());
+		loseselector->setPosition(menu_play->getPositionX() - 150, menu_play->getPositionY());
 	}; break;
 	case 2: {
-		loseselector->setPosition(menu_help->getPositionX() - 50, menu_help->getPositionY());
-	}; break;
-	case 3: {
 		loseselector->setPosition(menu_exit->getPositionX() - 50, menu_exit->getPositionY());
 	}; break;
 	}
@@ -106,9 +103,6 @@ void LoseScene::update(float delta){
 			play();
 		}; break;
 		case 2:{
-			instructions();
-		}; break;
-		case 3:{
 			exit();
 		}; break;
 		}
@@ -125,10 +119,6 @@ bool LoseScene::isKeyPressed(cocos2d::EventKeyboard::KeyCode code){
 void LoseScene::play(){
 	auto scene = MainMenu::createScene();
 	Director::getInstance()->replaceScene(scene);
-}
-
-void LoseScene::instructions(){
-	
 }
 
 void LoseScene::exit(){

@@ -1,5 +1,4 @@
 #include "MainMenu.h"
-#include "Story.h"
 #include "Help.h"
 
 USING_NS_CC;
@@ -35,15 +34,15 @@ bool MainMenu::init()
 	this->addChild(title);
 
 	menu_play = Label::createWithSystemFont("Play", "Arial", 30);
-	menu_help = Label::createWithSystemFont("Help", "Arial", 30);
+	//menu_help = Label::createWithSystemFont("Help", "Arial", 30);
 	menu_exit = Label::createWithSystemFont("Exit", "Arial", 30);
 
 	menu_play->setPosition(Point(title->getPositionX(), title->getPositionY()-100));
-	menu_help->setPosition(Point(menu_play->getPositionX(), menu_play->getPositionY() - 50));
-	menu_exit->setPosition(Point(menu_help->getPositionX(), menu_help->getPositionY() - 50));
+	//menu_help->setPosition(Point(menu_play->getPositionX(), menu_play->getPositionY() - 50));
+	menu_exit->setPosition(Point(menu_play->getPositionX(), menu_play->getPositionY() - 50));
 
 	this->addChild(menu_play);
-	this->addChild(menu_help);
+	//this->addChild(menu_help);
 	this->addChild(menu_exit);
 
 	//create "selector"
@@ -67,12 +66,12 @@ bool MainMenu::init()
 		case EventKeyboard::KeyCode::KEY_UP_ARROW:{
 			log("up");
 			if (selection == 1)
-				selection = 3;
+				selection = 2;
 			else selection--;
 		}; break;
 		case EventKeyboard::KeyCode::KEY_DOWN_ARROW:{
 			log("down");
-			if (selection == 3)
+			if (selection == 2)
 				selection = 1;
 			else selection++;
 		}; break;
@@ -95,9 +94,6 @@ void MainMenu::update(float delta){
 		selector->setPosition(menu_play->getPositionX() - 50, menu_play->getPositionY());
 	}; break;
 	case 2: {
-		selector->setPosition(menu_help->getPositionX() - 50, menu_help->getPositionY());
-	}; break;
-	case 3: {
 		selector->setPosition(menu_exit->getPositionX() - 50, menu_exit->getPositionY());
 	}; break;
 	}
@@ -107,9 +103,6 @@ void MainMenu::update(float delta){
 			play();
 		}; break;
 		case 2:{
-			instructions();
-		}; break;
-		case 3:{
 			exit();
 		}; break;
 		}

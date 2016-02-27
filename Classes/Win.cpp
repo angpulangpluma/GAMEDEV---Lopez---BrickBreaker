@@ -33,21 +33,21 @@ bool WinScene::init()
 
 	this->addChild(title);
 
-	menu_play = Label::createWithSystemFont("Play", "Arial", 30);
-	menu_help = Label::createWithSystemFont("Help", "Arial", 30);
+	menu_play = Label::createWithSystemFont("Play Again?", "Arial", 30);
+	//menu_help = Label::createWithSystemFont("Help", "Arial", 30);
 	menu_exit = Label::createWithSystemFont("Exit", "Arial", 30);
 
-	menu_play->setPosition(Point(title->getPositionX(), title->getPositionY() - 100));
-	menu_help->setPosition(Point(menu_play->getPositionX(), menu_play->getPositionY() - 50));
-	menu_exit->setPosition(Point(menu_help->getPositionX(), menu_help->getPositionY() - 50));
+	menu_play->setPosition(Point(title->getPositionX(), title->getPositionY() - 150));
+	//menu_help->setPosition(Point(menu_play->getPositionX(), menu_play->getPositionY() - 50));
+	menu_exit->setPosition(Point(menu_play->getPositionX(), menu_play->getPositionY() - 50));
 
 	this->addChild(menu_play);
-	this->addChild(menu_help);
+	//this->addChild(menu_help);
 	this->addChild(menu_exit);
 
 	//create "selector"
 	winselector = Sprite::create("ball.png");
-	winselector->setPosition(menu_play->getPositionX() - 50, menu_play->getPositionY());
+	winselector->setPosition(menu_play->getPositionX() - 700, menu_play->getPositionY());
 	this->addChild(winselector);
 
 	winselect = 1;
@@ -66,12 +66,12 @@ bool WinScene::init()
 		case EventKeyboard::KeyCode::KEY_UP_ARROW:{
 			log("up");
 			if (winselect == 1)
-				winselect = 3;
+				winselect = 2;
 			else winselect--;
 		}; break;
 		case EventKeyboard::KeyCode::KEY_DOWN_ARROW:{
 			log("down");
-			if (winselect == 3)
+			if (winselect == 2)
 				winselect = 1;
 			else winselect++;
 		}; break;
@@ -91,12 +91,9 @@ bool WinScene::init()
 void WinScene::update(float delta){
 	switch (winselect){
 	case 1: {
-		winselector->setPosition(menu_play->getPositionX() - 50, menu_play->getPositionY());
+		winselector->setPosition(menu_play->getPositionX() - 150, menu_play->getPositionY());
 	}; break;
 	case 2: {
-		winselector->setPosition(menu_help->getPositionX() - 50, menu_help->getPositionY());
-	}; break;
-	case 3: {
 		winselector->setPosition(menu_exit->getPositionX() - 50, menu_exit->getPositionY());
 	}; break;
 	}
@@ -106,9 +103,6 @@ void WinScene::update(float delta){
 			play();
 		}; break;
 		case 2:{
-			instructions();
-		}; break;
-		case 3:{
 			exit();
 		}; break;
 		}
@@ -125,10 +119,6 @@ bool WinScene::isKeyPressed(cocos2d::EventKeyboard::KeyCode code){
 void WinScene::play(){
 	auto scene = MainMenu::createScene();
 	Director::getInstance()->replaceScene(scene);
-}
-
-void WinScene::instructions(){
-
 }
 
 void WinScene::exit(){

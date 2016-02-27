@@ -13,13 +13,13 @@ public:
 	bool isKeyPressed(cocos2d::EventKeyboard::KeyCode);
 	
 	cocos2d::Label* menu_play;
-	cocos2d::Label* menu_help;
+	//cocos2d::Label* menu_help;
 	cocos2d::Label* menu_exit;
     // a selector callback
     //void menuCloseCallback(cocos2d::Ref* pSender);
 
 	void play();
-	void instructions();
+	//void instructions();
 	void exit();
     
     // implement the "static create()" method manually
