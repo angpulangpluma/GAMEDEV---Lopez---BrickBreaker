@@ -117,13 +117,14 @@ void WinScene::update(float delta){
 
 bool WinScene::isKeyPressed(cocos2d::EventKeyboard::KeyCode code){
 	if (keys.find(code) != keys.end()){
+		keys.erase(code);
 		return true;
 	}
 	return false;
 }
 void WinScene::play(){
 	auto scene = MainMenu::createScene();
-	Director::getInstance()->pushScene(scene);
+	Director::getInstance()->replaceScene(scene);
 }
 
 void WinScene::instructions(){

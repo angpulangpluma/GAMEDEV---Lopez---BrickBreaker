@@ -38,22 +38,22 @@ bool Breakout::init()
 	//edgeBody->setCollisionBitmask(1);
 	//edgeBody->setContactTestBitmask(true);
 
-	auto edgeNode = Node::create();
-	edgeNode->setPosition(Point(visibleSize.width / 2 + origin.x, 
+	edgeBox = Node::create();
+	edgeBox->setPosition(Point(visibleSize.width / 2 + origin.x, 
 		visibleSize.height / 2 + origin.y));
-	edgeNode->setPhysicsBody(edgeBody);
-	edgeNode->setTag(49);
+	edgeBox->setPhysicsBody(edgeBody);
+	edgeBox->setTag(49);
 
-	this->addChild(edgeNode);
+	this->addChild(edgeBox);
 
 	{
 		start = false;
 
-		auto one = Sprite::create("wall.png");
+		/*auto one = Sprite::create("wall.png");
 		one->setAnchorPoint(Vec2(0, 0));
 		one->setPosition(0, 250);
 		auto onepb = PhysicsBody::createBox(one->getContentSize(),
-			PhysicsMaterial(2.0f, 1.0f, 2.0f));
+		PhysicsMaterial(2.0f, 1.0f, 2.0f));
 		onepb->setDynamic(false);
 		onepb->setCollisionBitmask(1);
 		onepb->setContactTestBitmask(true);
@@ -61,24 +61,13 @@ bool Breakout::init()
 		one->setPhysicsBody(onepb);
 		one->setTag(39);
 		this->addChild(one);
-		wallcount = 1;
-		auto posx = one->getPositionX();
-		/*for (int i = 1; i < 1080 / 40; i++){
-			Sprite* w = Sprite::create("wall.png");
-			w->setAnchorPoint(Vec2(0, 0));
-			w->setPosition(posx + 40, one->getPositionY());
-			auto pb = PhysicsBody::createBox(w->getContentSize(), 
-				PhysicsMaterial(2.0f, 1.0f, 2.0f));
-			pb->setDynamic(false);
-			pb->setCollisionBitmask(1);
-			pb->setContactTestBitmask(true);
-			pb->setGravityEnable(false);
-			w->setPhysicsBody(pb);
-			w->setTag(39);
-			this->addChild(w);
-			posx = w->getPositionX();
-			wallcount++;
-		}*/
+		wallcount = 1;*/
+		auto ycoord = 400;
+		for (int i = 0; i < 5; i++){
+			createWalls(0, ycoord);
+			ycoord -= 45;
+		}
+		
 
 		ball = Sprite::create("ball.png");
 		auto ballpb = PhysicsBody::createBox(ball->getContentSize(), 
@@ -152,6 +141,28 @@ bool Breakout::init()
     return true;
 }
 
+void Breakout::createWalls(float startCoordX, float startCoordY){
+	auto posx = startCoordX;
+	auto prev = Sprite::create("wall.png");
+	for (int i = 1; i < 1080 / 40; i++){
+		Sprite* w = Sprite::create("wall.png");
+		w->setAnchorPoint(Vec2(0, 0));
+		w->setPosition(posx, startCoordY);
+		auto pb = PhysicsBody::createBox(w->getContentSize(),
+		PhysicsMaterial(2.0f, 1.0f, 2.0f));
+		pb->setDynamic(false);
+		pb->setCollisionBitmask(1);
+		pb->setContactTestBitmask(true);
+		pb->setGravityEnable(false);
+		w->setPhysicsBody(pb);
+		w->setTag(39);
+		this->addChild(w);
+		posx = w->getPositionX()+40;
+		prev = w;
+		wallcount++;
+	}
+}
+
 void Breakout::update(float delta){
 
 	Vec2 ploc = platform->getPosition();
@@ -163,17 +174,17 @@ void Breakout::update(float delta){
 		//make the ball move here
 		pbody->setLinearDamping(0.0f);
 		pbody->setVelocity(Vec2(250, 250));
+		keys.erase(EventKeyboard::KeyCode::KEY_SPACE);
 		//pbody->setAngularVelocity(0);
 	}
 	if (isKeyPressed(EventKeyboard::KeyCode::KEY_LEFT_ARROW) ||
 		isKeyPressed(EventKeyboard::KeyCode::KEY_A)){
 		log("left!");
 		if (!start)
-			ball->setPosition(ploc.x+30, bloc.y);
-		
-			platform->setPosition(ploc.x - 5, ploc.y);
-			log("left");
-		
+			ball->setPosition(ploc.x + 30, bloc.y);
+		platform->setPosition(ploc.x - 5, ploc.y);
+		log("left");
+
 	}
 	else if (isKeyPressed(EventKeyboard::KeyCode::KEY_RIGHT_ARROW) ||
 		isKeyPressed(EventKeyboard::KeyCode::KEY_D)){
@@ -186,7 +197,7 @@ void Breakout::update(float delta){
 		
 	}
 
-	if (bloc.y<platform->getBoundingBox().getMinY()){
+	if (bloc.y==edgeBox->getBoundingBox().getMinY()+3){
 		//detect if the ball is at the bottom of the screen
 		auto scene = LoseScene::createScene();
 		Director::getInstance()->replaceScene(scene);
@@ -226,9 +237,6 @@ bool Breakout::onContactBegin(cocos2d::PhysicsContact& contact){
 			ball->getPhysicsBody()->setVelocity(Vec2(250, 250));
 		}
 		else if (b->getTag() == 49 && a->getTag() == 11){
-			ball->getPhysicsBody()->setVelocity(Vec2(250, 250));
-		}
-		else if (a->getTag() == b->getTag() && a->getTag() == 11){
 			ball->getPhysicsBody()->setVelocity(Vec2(250, 250));
 		}
 	}

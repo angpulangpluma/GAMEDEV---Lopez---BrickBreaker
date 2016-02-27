@@ -23,6 +23,7 @@ public:
 	bool isKeyPressed(cocos2d::EventKeyboard::KeyCode);
 	bool onContactBegin(cocos2d::PhysicsContact& contact);
 	void onContactSeperate(cocos2d::PhysicsContact& contact);
+	void createWalls(float, float);
     
     // implement the "static create()" method manually
     CREATE_FUNC(Breakout);
@@ -31,4 +32,5 @@ private:
 	cocos2d::PhysicsWorld *sceneWorld;
 	cocos2d::Sprite* sp1;
 	void setPhysicsWorld(cocos2d::PhysicsWorld *world) { sceneWorld = world; };
+	cocos2d::Node* edgeBox;
 };

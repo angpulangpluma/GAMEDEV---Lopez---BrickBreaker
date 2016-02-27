@@ -42,18 +42,6 @@ bool Help::init()
 		if (keys.find(keyCode) == keys.end()){
 			keys[keyCode] = std::chrono::high_resolution_clock::now();
 		}
-		switch (keyCode){
-		case EventKeyboard::KeyCode::KEY_LEFT_ARROW:{
-			if (sequence >= 1 && sequence <= 4)
-				sequence--;
-			log("current seq no: " + sequence);
-		}; break;
-		case EventKeyboard::KeyCode::KEY_RIGHT_ARROW:{
-			if (sequence >= 1 && sequence <= 4)
-				sequence++;
-			log("current seq no: " + sequence);
-		}; break;
-		}
 
 	};
 
@@ -64,18 +52,15 @@ bool Help::init()
 	this->_eventDispatcher->addEventListenerWithSceneGraphPriority(eventListener, title);
 
 	help_desc = Label::createWithSystemFont("Play", "Arial", 30);
-	help_pic = Sprite::create("ball.png");
-	help_pgno = Label::createWithSystemFont("1/4", "Arial", 25);
+	help_pic = Sprite::create("help.png");
 	auto help_play = Label::createWithSystemFont("Press 'Enter' to start playing!", "Arial", 25);
 
 	help_desc->setPosition(Point(title->getPositionX(), title->getPositionY() - 50));
 	help_pic->setPosition(Point(help_desc->getPositionX(), help_desc->getPositionY() - 50));
-	help_pgno->setPosition(Point(borders.getMidX()+250, borders.getMinY()+20));
-	help_play->setPosition(Point(borders.getMidX() - 250, borders.getMinY() + 20));
+	help_play->setPosition(Point(borders.getMidX(), borders.getMinY()+100));
 
 	this->addChild(help_desc);
 	this->addChild(help_pic);
-	this->addChild(help_pgno);
 	this->addChild(help_play);
 
 	this->scheduleUpdate();
@@ -84,26 +69,6 @@ bool Help::init()
 
 void Help::update(float delta){
 	Node::update(delta);
-
-	std::stringstream ss;
-	switch (sequence){
-	case 1:{
-		ss << "1/4";
-		help_pgno->setString(ss.str().c_str());
-	}; break;
-	case 2:{
-		ss << "2/4";
-		help_pgno->setString(ss.str().c_str());
-	}; break;
-	case 3:{
-		ss << "3/4";
-		help_pgno->setString(ss.str().c_str());
-	}; break;
-	case 4:{
-		ss << "3/4";
-		help_pgno->setString(ss.str().c_str());
-	}; break;
-	}
 	if (isKeyPressed(EventKeyboard::KeyCode::KEY_ENTER)){
 		auto scene = Breakout::createScene();
 		Director::getInstance()->replaceScene(scene);
@@ -112,6 +77,7 @@ void Help::update(float delta){
 
 bool Help::isKeyPressed(EventKeyboard::KeyCode code){
 	if (keys.find(code) != keys.end()){
+		keys.erase(code);
 		return true;
 	}
 	return false;

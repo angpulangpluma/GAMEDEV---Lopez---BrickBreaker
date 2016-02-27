@@ -118,12 +118,13 @@ void MainMenu::update(float delta){
 
 bool MainMenu::isKeyPressed(cocos2d::EventKeyboard::KeyCode code){
 	if (keys.find(code) != keys.end()){
+		keys.erase(code);
 		return true;
 	}
 	return false;
 }
 void MainMenu::play(){
-	auto scene = Story::createScene();
+	auto scene = Help::createScene();
 	Director::getInstance()->pushScene(scene);
 }
 

@@ -24,5 +24,4 @@ private:
 		std::chrono::high_resolution_clock::time_point> keys;
 	cocos2d::Label * help_desc;
 	cocos2d::Sprite * help_pic;
-	cocos2d::Label * help_pgno;
 };

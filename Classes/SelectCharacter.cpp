@@ -47,3 +47,16 @@ bool SelectCharacter::init()
     
     return true;
 }
+
+void SelectCharacter::update(float delta){
+
+}
+bool SelectCharacterisKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode){
+	return true;
+}
+
+int characterselect;
+std::map<cocos2d::EventKeyboard::KeyCode,
+	std::chrono::high_resolution_clock::time_point> keys;
+cocos2d::Label * char_desc;
+cocos2d::Sprite * char_pic;
